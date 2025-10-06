@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  // or "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  products      Product[] @relation("UserProducts") // items user sells
+  bids          Bid[] // bids user makes
+  orders        Order[] // purchases
+  emailVerified Boolean   @default(false)
+  image         String?
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("user")
+}
+
+model Product {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  price       Decimal       @db.Decimal(10, 2)
+  imageUrl    String?
+  status      ProductStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  sellerId String
+  seller   User     @relation("UserProducts", fields: [sellerId], references: [id])
+  auction  Auction?
+  orders   Order[]
+}
+
+model Auction {
+  id           String   @id @default(cuid())
+  startPrice   Decimal  @db.Decimal(10, 2)
+  currentPrice Decimal  @db.Decimal(10, 2)
+  startTime    DateTime
+  endTime      DateTime
+  isLive       Boolean  @default(true)
+
+  // Relations
+  productId String  @unique
+  product   Product @relation(fields: [productId], references: [id])
+  bids      Bid[]
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  amount    Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  auctionId String
+  auction   Auction @relation(fields: [auctionId], references: [id])
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  totalPrice Decimal  @db.Decimal(10, 2)
+
+  // Relations
+  buyerId String
+  buyer   User   @relation(fields: [buyerId], references: [id])
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+enum ProductStatus {
+  ACTIVE
+  SOLD
+  INACTIVE
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
