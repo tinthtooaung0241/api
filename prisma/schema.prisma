@@ -20,7 +20,6 @@ model User {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
-  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -40,7 +39,7 @@ model Product {
   id          String        @id @default(cuid())
   title       String
   description String?
-  price       Decimal       @db.Decimal(10, 2)
+  price       Int
   imageUrl    String?
   status      ProductStatus @default(ACTIVE)
   createdAt   DateTime      @default(now())
@@ -54,12 +53,16 @@ model Product {
 }
 
 model Auction {
-  id           String   @id @default(cuid())
-  startPrice   Decimal  @db.Decimal(10, 2)
-  currentPrice Decimal  @db.Decimal(10, 2)
+  id           String    @id @default(cuid())
+  startPrice   Int
+  currentPrice Int
   startTime    DateTime
   endTime      DateTime
-  isLive       Boolean  @default(true)
+  isLive       Boolean   @default(true)
+  role         String?   @default("user")
+  banned       Boolean?
+  bannedReason String?
+  banExpires   DateTime?
 
   // Relations
   productId String  @unique
@@ -69,7 +72,7 @@ model Auction {
 
 model Bid {
   id        String   @id @default(cuid())
-  amount    Decimal  @db.Decimal(10, 2)
+  amount    Int
   createdAt DateTime @default(now())
 
   // Relations
@@ -83,7 +86,7 @@ model Bid {
 model Order {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
-  totalPrice Decimal  @db.Decimal(10, 2)
+  totalPrice Int
 
   // Relations
   buyerId String
@@ -100,15 +103,16 @@ enum ProductStatus {
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  impersonatedBy String?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@map("session")

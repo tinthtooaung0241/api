@@ -8,6 +8,9 @@ export const createAuth = (
   prismaService: PrismaService,
 ) => {
   return betterAuth({
+    trustedOrigins: [
+      configService.get<string>('WEB_URL') || 'http://localhost:3000',
+    ],
     database: prismaAdapter(prismaService, {
       provider: 'postgresql',
     }),
@@ -21,7 +24,7 @@ export const createAuth = (
       },
     },
     secret: configService.get<string>('BETTER_AUTH_SECRET'),
-    baseURL:
-      configService.get<string>('BETTER_AUTH_URL') || 'http://localhost:3000',
+    baseURL: configService.get<string>('WEB_URL') || 'http://localhost:3000',
+    plugins: [],
   });
 };
