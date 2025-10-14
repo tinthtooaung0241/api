@@ -14,14 +14,27 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductStatus } from '@prisma/client';
-import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
+import {
+  AllowAnonymous,
+  UserSession,
+  Session,
+} from '@thallesp/nestjs-better-auth';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  create(@Body(ValidationPipe) createProductDto: CreateProductDto) {
+  create(
+    @Body(ValidationPipe) createProductDto: CreateProductDto,
+    @Session() session: UserSession,
+  ) {
+    const userId = session.user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+    // Override sellerId with authenticated user's ID
+    createProductDto.sellerId = userId;
     return this.productsService.create(createProductDto);
   }
 
@@ -42,6 +55,7 @@ export class ProductsController {
     });
   }
 
+  @AllowAnonymous()
   @Get('count')
   count(
     @Query('status') status?: ProductStatus,
@@ -50,6 +64,7 @@ export class ProductsController {
     return this.productsService.count({ status, sellerId });
   }
 
+  @AllowAnonymous()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);

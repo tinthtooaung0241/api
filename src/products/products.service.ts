@@ -14,7 +14,7 @@ export class ProductsService {
         title: createProductDto.title,
         description: createProductDto.description,
         price: createProductDto.price,
-        imageUrl: createProductDto.imageUrl,
+        imageUrl: createProductDto.imageUrl || [],
         status: createProductDto.status || ProductStatus.ACTIVE,
         sellerId: createProductDto.sellerId,
       },
