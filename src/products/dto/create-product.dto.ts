@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsEnum,
   IsPositive,
+  IsArray,
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -22,13 +23,14 @@ export class CreateProductDto {
   @IsPositive()
   price!: number;
 
-  @IsString()
+  @IsArray()
+  @IsString({ each: true })
   @IsOptional()
-  imageUrl?: string;
+  imageUrl?: string[];
 
   @IsEnum(ProductStatus)
   @IsOptional()
-  status?: ProductStatus;
+  status?: ProductStatus = ProductStatus.ACTIVE;
 
   @IsString()
   @IsNotEmpty()
