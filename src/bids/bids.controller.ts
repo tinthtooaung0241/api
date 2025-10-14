@@ -5,11 +5,14 @@ import {
   Body,
   Param,
   ValidationPipe,
-  Request,
 } from '@nestjs/common';
 import { BidsService } from './bids.service';
 import { CreateBidDto } from './dto';
-import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
+import {
+  AllowAnonymous,
+  UserSession,
+  Session,
+} from '@thallesp/nestjs-better-auth';
 
 @Controller('bids')
 export class BidsController {
@@ -18,9 +21,9 @@ export class BidsController {
   @Post()
   create(
     @Body(ValidationPipe) createBidDto: CreateBidDto,
-    @Request() req: any,
+    @Session() session: UserSession,
   ) {
-    const userId = req.user?.id;
+    const userId = session.user?.id;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -34,8 +37,8 @@ export class BidsController {
   }
 
   @Get('my-bids')
-  findMyBids(@Request() req: any) {
-    const userId = req.user?.id;
+  findMyBids(@Session() session: UserSession) {
+    const userId = session.user?.id;
     if (!userId) {
       throw new Error('User not authenticated');
     }
