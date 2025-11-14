@@ -26,5 +26,13 @@ export const createAuth = (
     secret: configService.get<string>('BETTER_AUTH_SECRET'),
     baseURL: configService.get<string>('WEB_URL') || 'http://localhost:3000',
     plugins: [],
+    user: {
+      additionalFields: {
+        isSubscribed: {
+          type: 'boolean',
+          required: false,
+        },
+      },
+    },
   });
 };

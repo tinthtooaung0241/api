@@ -77,4 +77,38 @@ export class UsersService {
       totalOrders,
     };
   }
+
+  async subscribe(id: string): Promise<Partial<User>> {
+    await this.findOne(id);
+
+    return this.prisma.user.update({
+      where: { id },
+      data: { isSubscribed: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        isSubscribed: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async unsubscribe(id: string): Promise<Partial<User>> {
+    await this.findOne(id);
+
+    return this.prisma.user.update({
+      where: { id },
+      data: { isSubscribed: false },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        isSubscribed: true,
+        createdAt: true,
+      },
+    });
+  }
 }

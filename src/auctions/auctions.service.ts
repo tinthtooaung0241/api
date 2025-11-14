@@ -33,8 +33,9 @@ export class AuctionsService {
       );
     }
 
-    if (product.auction) {
-      throw new BadRequestException('Product already has an auction');
+    // Only block if product has an active auction
+    if (product.auction && product.auction.isLive) {
+      throw new BadRequestException('Product already has an active auction');
     }
 
     // Validate dates
@@ -48,6 +49,21 @@ export class AuctionsService {
 
     if (endTime <= startTime) {
       throw new BadRequestException('End time must be after start time');
+    }
+
+    // If product has an ended auction, delete bids first, then the auction
+    // (due to unique constraint on productId and foreign key constraints from bids)
+    if (product.auction && !product.auction.isLive) {
+      await this.prisma.$transaction([
+        // Delete all bids associated with the ended auction
+        this.prisma.bid.deleteMany({
+          where: { auctionId: product.auction.id },
+        }),
+        // Then delete the ended auction
+        this.prisma.auction.delete({
+          where: { id: product.auction.id },
+        }),
+      ]);
     }
 
     // Create auction

@@ -1,14 +1,26 @@
-import { Controller, Get, Patch, Body, Param, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Body,
+  Param,
+  Request,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
+import {
+  AllowAnonymous,
+  UserSession,
+  Session,
+} from '@thallesp/nestjs-better-auth';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
-  getMe(@Request() req: any) {
-    const userId = req.user?.id;
+  getMe(@Session() session: UserSession) {
+    const userId = session.user?.id;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -24,9 +36,9 @@ export class UsersController {
   @Patch('me')
   updateMe(
     @Body() data: { name?: string; image?: string },
-    @Request() req: any,
+    @Session() session: UserSession,
   ) {
-    const userId = req.user?.id;
+    const userId = session.user?.id;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -37,5 +49,23 @@ export class UsersController {
   @AllowAnonymous()
   getStats(@Param('id') id: string) {
     return this.usersService.getStats(id);
+  }
+
+  @Post('me/subscribe')
+  subscribe(@Session() session: UserSession) {
+    const userId = session.user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+    return this.usersService.subscribe(userId);
+  }
+
+  @Post('me/unsubscribe')
+  unsubscribe(@Session() session: UserSession) {
+    const userId = session.user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+    return this.usersService.unsubscribe(userId);
   }
 }

@@ -35,9 +35,20 @@ export class BidsService {
       throw new ForbiddenException('You cannot bid on your own auction');
     }
 
-    // Check if auction is active
-    if (!this.auctionsService.validateAuctionActive(auction)) {
-      throw new BadRequestException('Auction is not active');
+    // Check if auction is active with detailed validation
+    const now = new Date();
+    if (!auction.isLive) {
+      throw new BadRequestException('Auction is not live');
+    }
+    if (auction.startTime > now) {
+      throw new BadRequestException(
+        `Auction has not started yet. Start time: ${auction.startTime.toISOString()}, Current time: ${now.toISOString()}`,
+      );
+    }
+    if (auction.endTime <= now) {
+      throw new BadRequestException(
+        `Auction has ended. End time: ${auction.endTime.toISOString()}, Current time: ${now.toISOString()}`,
+      );
     }
 
     // Validate bid amount
