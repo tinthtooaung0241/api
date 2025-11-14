@@ -60,7 +60,13 @@ export class ProductsService {
             email: true,
           },
         },
-        auction: true,
+        auction: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -80,20 +86,10 @@ export class ProductsService {
           },
         },
         auction: {
-          include: {
-            bids: {
-              include: {
-                user: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
-              },
-              orderBy: {
-                amount: 'desc',
-              },
-            },
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
           },
         },
       },
