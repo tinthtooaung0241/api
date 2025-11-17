@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { createAuth } from 'src/lib/auth';
+import { createAuth } from '../lib/auth';
 
 @Module({
   controllers: [AuthController],
