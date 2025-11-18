@@ -6,9 +6,19 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS for frontend
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://web-peach-one-55.vercel.app',
+    process.env.WEB_URL,
+    ...(process.env.ALLOWED_ORIGINS?.split(',') || []),
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: ['https://web-peach-one-55.vercel.app', process.env.WEB_URL], // Add your frontend URL
+    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie'],
   });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -20,4 +30,4 @@ async function bootstrap() {
   );
   await app.listen(process.env.PORT ?? 3001);
 }
-bootstrap();
+void bootstrap();

@@ -32,6 +32,7 @@ export const createAuth = (
     },
     secret: configService.get<string>('BETTER_AUTH_SECRET'),
     baseURL: configService.get<string>('WEB_URL') || 'http://localhost:3000',
+    basePath: '/api/auth',
     plugins: [],
     user: {
       additionalFields: {
