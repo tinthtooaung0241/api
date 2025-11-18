@@ -7,7 +7,11 @@ async function bootstrap() {
 
   // Enable CORS for frontend
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'], // Add your frontend URL
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      process.env.WEB_URL,
+    ], // Add your frontend URL
     credentials: true,
   });
   app.useGlobalPipes(
