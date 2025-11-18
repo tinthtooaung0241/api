@@ -33,10 +33,12 @@ export const createAuth = (
     },
     secret: configService.get<string>('BETTER_AUTH_SECRET'),
     baseURL: configService.get<string>('WEB_URL') || 'http://localhost:3000',
+    basePath: '/api/auth',
     advanced: {
       cookiePrefix: '',
       crossSubDomainCookies: {
         enabled: true, // Enable for cross-domain in production
+        // This automatically sets SameSite=None and Secure for cross-domain cookies
       },
     },
     plugins: [],
