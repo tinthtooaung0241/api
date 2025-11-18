@@ -27,6 +27,7 @@ export const createAuth = (
       google: {
         clientId: configService.get<string>('GOOGLE_CLIENT_ID') || '',
         clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET') || '',
+        redirectURI: `${webUrl}/api/auth/callback/google`, // Explicitly set callback URL to frontend domain
       },
     },
     secret: configService.get<string>('BETTER_AUTH_SECRET'),
@@ -36,11 +37,8 @@ export const createAuth = (
       cookiePrefix: '',
       crossSubDomainCookies: {
         enabled: true, // Enable for cross-domain in production
-        sameSite: 'none',
-        secure: true,
         // This automatically sets SameSite=None and Secure for cross-domain cookies
         // Cookies will be set for the baseURL domain (frontend), not the backend domain
-        domain: webUrl,
       },
     },
     plugins: [],
