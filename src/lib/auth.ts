@@ -34,11 +34,20 @@ export const createAuth = (
     baseURL: webUrl, // Frontend URL - cookies will be set for this domain
     basePath: '/api/auth',
     advanced: {
+      cookies: {
+        state: {
+          attributes: {
+            sameSite: 'none',
+            secure: true,
+          },
+        },
+      },
       cookiePrefix: '',
       crossSubDomainCookies: {
         enabled: true, // Enable for cross-domain in production
         // This automatically sets SameSite=None and Secure for cross-domain cookies
         // Cookies will be set for the baseURL domain (frontend), not the backend domain
+        domain: webUrl,
       },
       // Explicitly set cookie attributes for OAuth state cookies to avoid CSRF attacks
       defaultCookieAttributes: {
