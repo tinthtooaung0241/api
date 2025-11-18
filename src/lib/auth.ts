@@ -27,7 +27,6 @@ export const createAuth = (
       google: {
         clientId: configService.get<string>('GOOGLE_CLIENT_ID') || '',
         clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET') || '',
-        redirectURI: `${webUrl}/api/auth/callback/google`, // Frontend domain - goes through Next.js rewrite
       },
     },
     secret: configService.get<string>('BETTER_AUTH_SECRET'),
