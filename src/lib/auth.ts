@@ -42,6 +42,7 @@ export const createAuth = (
         enabled: true, // Enable for cross-domain in production
         // This automatically sets SameSite=None and Secure for cross-domain cookies
         // Cookies will be set for the baseURL domain (frontend), not the backend domain
+        domain: webUrl,
       },
     },
     plugins: [],
