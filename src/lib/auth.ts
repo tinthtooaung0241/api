@@ -20,6 +20,18 @@ export const createAuth = (
     webUrl.includes('localhost') || webUrl.includes('127.0.0.1');
   const isProduction = !isDevelopment;
 
+  // Extract domain from webUrl (remove protocol and path)
+  const getDomain = (url: string): string | undefined => {
+    try {
+      const urlObj = new URL(url);
+      return urlObj.hostname;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const webDomain = getDomain(webUrl);
+
   return betterAuth({
     trustedOrigins: allowedOrigins,
     database: prismaAdapter(prismaService, {
@@ -45,18 +57,21 @@ export const createAuth = (
           attributes: {
             sameSite: isDevelopment ? 'lax' : 'none',
             secure: isProduction, // Only require HTTPS in production
+            // Ensure state cookie persists long enough for OAuth flow
+            maxAge: 600, // 10 minutes - enough time for OAuth redirect
           },
         },
       },
       cookiePrefix: '',
-      crossSubDomainCookies: isProduction
-        ? {
-            enabled: true, // Enable for cross-domain in production
-            // This automatically sets SameSite=None and Secure for cross-domain cookies
-            // Cookies will be set for the baseURL domain (frontend), not the backend domain
-            domain: webUrl,
-          }
-        : undefined, // Disable cross-subdomain cookies in development
+      crossSubDomainCookies:
+        isProduction && webDomain
+          ? {
+              enabled: true, // Enable for cross-domain in production
+              // This automatically sets SameSite=None and Secure for cross-domain cookies
+              // Cookies will be set for the baseURL domain (frontend), not the backend domain
+              domain: webDomain, // Use just the domain, not the full URL
+            }
+          : undefined, // Disable cross-subdomain cookies in development
       // Explicitly set cookie attributes for OAuth state cookies to avoid CSRF attacks
       defaultCookieAttributes: {
         sameSite: isDevelopment ? 'lax' : 'none',
