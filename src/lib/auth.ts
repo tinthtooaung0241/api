@@ -15,6 +15,11 @@ export const createAuth = (
     ...(process.env.ALLOWED_ORIGINS?.split(',') || []),
   ].filter(Boolean);
 
+  // Detect if we're in development (localhost)
+  const isDevelopment =
+    webUrl.includes('localhost') || webUrl.includes('127.0.0.1');
+  const isProduction = !isDevelopment;
+
   return betterAuth({
     trustedOrigins: allowedOrigins,
     database: prismaAdapter(prismaService, {
@@ -38,22 +43,24 @@ export const createAuth = (
       cookies: {
         state: {
           attributes: {
-            sameSite: 'none',
-            secure: true,
+            sameSite: isDevelopment ? 'lax' : 'none',
+            secure: isProduction, // Only require HTTPS in production
           },
         },
       },
       cookiePrefix: '',
-      crossSubDomainCookies: {
-        enabled: true, // Enable for cross-domain in production
-        // This automatically sets SameSite=None and Secure for cross-domain cookies
-        // Cookies will be set for the baseURL domain (frontend), not the backend domain
-        domain: webUrl,
-      },
+      crossSubDomainCookies: isProduction
+        ? {
+            enabled: true, // Enable for cross-domain in production
+            // This automatically sets SameSite=None and Secure for cross-domain cookies
+            // Cookies will be set for the baseURL domain (frontend), not the backend domain
+            domain: webUrl,
+          }
+        : undefined, // Disable cross-subdomain cookies in development
       // Explicitly set cookie attributes for OAuth state cookies to avoid CSRF attacks
       defaultCookieAttributes: {
-        sameSite: 'none',
-        secure: true,
+        sameSite: isDevelopment ? 'lax' : 'none',
+        secure: isProduction, // Only require HTTPS in production
         httpOnly: true,
       },
     },
