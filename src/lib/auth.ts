@@ -29,11 +29,11 @@ export const createAuth = (
       google: {
         clientId: configService.get<string>('GOOGLE_CLIENT_ID') || '',
         clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET') || '',
-        redirectURI: `${webUrl}/api/auth/callback/google`, // Explicitly set callback URL to frontend domain
+        redirectURI: `${webUrl}/api/auth/callback/google`, // Frontend domain - goes through Next.js rewrite
       },
     },
     secret: configService.get<string>('BETTER_AUTH_SECRET'),
-    baseURL: configService.get<string>('WEB_URL') || 'http://localhost:3000', // Frontend URL for cookie domain
+    baseURL: webUrl, // Frontend URL - cookies will be set for this domain
     basePath: '/api/auth',
     advanced: {
       cookiePrefix: '',
