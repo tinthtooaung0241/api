@@ -11,8 +11,9 @@ export const createAuth = (
     configService.get<string>('WEB_URL') || 'http://localhost:3000';
   const allowedOrigins = [
     webUrl,
-
+    'http://localhost:3000',
     'http://localhost:3001',
+    'https://web-peach-one-55.vercel.app', // Explicitly add Vercel domain
     ...(process.env.ALLOWED_ORIGINS?.split(',') || []),
   ].filter(Boolean);
 
