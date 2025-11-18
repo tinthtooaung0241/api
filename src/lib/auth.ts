@@ -40,6 +40,12 @@ export const createAuth = (
         // This automatically sets SameSite=None and Secure for cross-domain cookies
         // Cookies will be set for the baseURL domain (frontend), not the backend domain
       },
+      // Explicitly set cookie attributes for OAuth state cookies
+      defaultCookieAttributes: {
+        sameSite: 'none',
+        secure: true,
+        httpOnly: true,
+      },
     },
     plugins: [],
     user: {
