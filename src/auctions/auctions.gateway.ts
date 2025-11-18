@@ -13,7 +13,11 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 @WebSocketGateway({
   cors: {
-    origin: ['https://web-peach-one-55.vercel.app', process.env.WEB_URL],
+    origin: [
+      'https://web-peach-one-55.vercel.app',
+      process.env.WEB_URL,
+      'http://localhost:3000',
+    ],
     credentials: true,
   },
 })

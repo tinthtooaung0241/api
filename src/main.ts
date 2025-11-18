@@ -10,7 +10,6 @@ async function bootstrap() {
   // Enable CORS for frontend
   const allowedOrigins = [
     'http://localhost:3000',
-    'http://localhost:3001',
     'https://web-peach-one-55.vercel.app',
     process.env.WEB_URL,
     ...(process.env.ALLOWED_ORIGINS?.split(',') || []),
