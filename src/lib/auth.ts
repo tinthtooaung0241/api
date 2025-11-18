@@ -35,6 +35,7 @@ export const createAuth = (
     secret: configService.get<string>('BETTER_AUTH_SECRET'),
     baseURL: webUrl, // Frontend URL - cookies will be set for this domain
     basePath: '/api/auth',
+
     advanced: {
       cookiePrefix: '',
       crossSubDomainCookies: {
