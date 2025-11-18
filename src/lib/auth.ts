@@ -34,6 +34,7 @@ export const createAuth = (
     baseURL: webUrl, // Frontend URL - cookies will be set for this domain
     basePath: '/api/auth',
     advanced: {
+      //cookies configuration
       cookies: {
         state: {
           attributes: {
