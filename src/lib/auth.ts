@@ -7,10 +7,17 @@ export const createAuth = (
   configService: ConfigService,
   prismaService: PrismaService,
 ) => {
+  const webUrl =
+    configService.get<string>('WEB_URL') || 'http://localhost:3000';
+  const allowedOrigins = [
+    webUrl,
+
+    'http://localhost:3001',
+    ...(process.env.ALLOWED_ORIGINS?.split(',') || []),
+  ].filter(Boolean);
+
   return betterAuth({
-    trustedOrigins: [
-      configService.get<string>('WEB_URL') || 'http://localhost:3000',
-    ],
+    trustedOrigins: allowedOrigins,
     database: prismaAdapter(prismaService, {
       provider: 'postgresql',
     }),
